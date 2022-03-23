@@ -104,9 +104,6 @@ class StopInfo:
             if diff.seconds != 0:
                 self.time_class = "early"
 
-        # TODO
-        self.time_class = "punctual"
-
 
 @dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclasses.dataclass

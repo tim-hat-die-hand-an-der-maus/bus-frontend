@@ -1,4 +1,5 @@
 <!doctype html>
+<html>
 <head>
     <title>HST {{  stop.stopName }}</title>
     <style>
@@ -103,19 +104,19 @@
         }
 
         .punctual {
-            background-color: inherit;
+            color: inherit;
         }
 
         .early {
-            background-color: #00cc00;
+            color: #00cc00;
         }
 
         .delayed {
-            background-color: #FFA500;
+            color: #FFA500;
         }
 
         .late {
-            background-color: #cc0000;
+            color: #cc0000;
         }
 
         .direction-td {
@@ -167,7 +168,7 @@
                 <span class="tripID">{{ info.vehicle_type }} {{ info.pattern_text }}</span>
             </td>
             <td class="direction-td">
-                <span class="direction" title="{% if route %}{{ route.alerts | join(', ') }} {% endif %}">{{ info.direction }}</span>
+                <span class="direction {{ info.time_class }}" title="{% if route %}{{ route.alerts | join(', ') }} {% endif %}">{{ info.direction }}</span>
             </td>
             <td>
                 {% if info.vias %}
@@ -183,3 +184,4 @@
     </tbody>
 </table>
 </body>
+</html>
