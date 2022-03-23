@@ -26,6 +26,7 @@ service:
 ingress:
   hosts:
     - bus.timhatdiehandandermaus.consulting
+    - tram.timhatdiehandandermaus.consulting
   secret: tls-bus-frontend
   issuer: letsencrypt-issuer-http
   name: bus-frontend
