@@ -26,6 +26,24 @@ TIME_UNIT_CONVERSION_TABLE = {
 
 @dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclasses.dataclass
+class Alert:
+    pass
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL)
+@dataclasses.dataclass
+class Route:
+    alerts: List[Alert]
+    authority: str
+    directions: List[str]
+    id: str
+    name: str
+    route_type: str
+    short_name: str
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL)
+@dataclasses.dataclass
 class StopInfo:
     actual_relative_time: int
     direction: str
@@ -41,15 +59,25 @@ class StopInfo:
     mixed_time_unit: str = ""
     actual_time: str = ""
     vehicle_id: str = ""
+    vehicle_type: str = ""
+    route: Optional[Route] = None
 
-    def update(self):
+    def update(self, routes: List[Route] = None):
         self.update_mixed_time()
         self.set_time_class()
         self.update_vias()
 
+        route = [route for route in routes if route.short_name == self.pattern_text]
+        if route:
+            self.route = route[0]
+            self.set_route_information()
+
     def update_vias(self):
         if self.vias:
             self.vias = [via.replace("via ", "") for via in self.vias]
+
+    def set_route_information(self):
+        self.vehicle_type = self.route.route_type.capitalize()
 
     def update_mixed_time(self):
         s = self.mixed_time.split(" ")
@@ -85,6 +113,7 @@ class StopInfo:
 class Stop:
     actual: List[StopInfo]
     stopName: str
+    routes: List[Route]
 
 
 def get_stop(stop_number: int = 180):
@@ -103,7 +132,7 @@ def get_stop(stop_number: int = 180):
 def index(stop_number: int):
     content: Stop = get_stop(stop_number)
 
-    [info.update() for info in content.actual]
+    [info.update(content.routes) for info in content.actual]
 
     kwargs = {
         "stop": content,

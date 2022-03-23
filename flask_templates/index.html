@@ -152,11 +152,11 @@
     {% for info in stop.actual %}
         <tr class="{{ info.time_class }}">
             <td class="cell_time">
-                <span class="time" title="Geplant: {{ info.planned_time }}">{{ info.actual_time }}</span>
-                <span class="tripID">{{ info.pattern_text }}</span>
+                <span class="time">{{ info.actual_time }}</span>
+                <span class="tripID">{{ info.vehicle_type }} {{ info.pattern_text }}</span>
             </td>
             <td>
-                <span class="direction">{{ info.direction }}</span>
+                <span class="direction" title="{% if route %}{{ route.alerts | join(', ') }} {% endif %}">{{ info.direction }}</span>
             </td>
             <td>
                 {% if info.vias %}
