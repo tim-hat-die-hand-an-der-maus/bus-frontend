@@ -16,10 +16,8 @@
             height: 100%;
             width: 100%;
             text-align: left;
-            table-left: fixed;
             clear: both;
             border-collapse: collapse;
-            border-spacing: 0;
         }
 
         th {
@@ -39,12 +37,13 @@
 
         tr {
             background: none repeat scroll 0 0 transparent;
-            border: 0 none;
+            border: 3px solid #000080;
             font-size: 100%;
             margin: 0;
             outline: 0 none;
             padding: 0;
             vertical-align: baseline;
+            height: 98%;
         }
 
         .vias {
@@ -130,6 +129,14 @@
             white-space: nowrap;
         }
     </style>
+    <script type="application/javascript">
+        function change_stop() {
+            const element = document.getElementById("stop-select");
+            const stopId = element.options[element.selectedIndex].value;
+
+            window.location.href = "https://tram.timhatdiehandandermaus.consulting/" + stopId;
+        }
+    </script>
 </head>
 <body>
 {% with messages = get_flashed_messages() %}
@@ -182,6 +189,18 @@
         </tr>
     {% endfor %}
     </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="5" style="text-align: center">
+                <label for="stop-select">Haltestelle aussuchen</label>
+                <select id="stop-select" name="stop" onchange="change_stop()">
+                {% for id, name in stops_map.items() %}
+                    <option value="{{ id }}">{{ name }}</option>
+                {% endfor %}
+                </select>
+            </td>
+        </tr>
+    </tfoot>
 </table>
 </body>
 </html>
