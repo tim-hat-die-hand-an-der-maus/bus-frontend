@@ -129,7 +129,10 @@ def get_stop(stop_number: int = 180):
 def index(stop_number: int):
     content: Stop = get_stop(stop_number)
 
-    [info.update(content.routes) for info in content.actual]
+    try:
+        [info.update(content.routes) for info in content.actual]
+    except AttributeError:
+        return "This stop doesn't exist"
 
     kwargs = {
         "stop": content,
