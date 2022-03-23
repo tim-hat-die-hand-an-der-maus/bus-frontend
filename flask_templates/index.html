@@ -60,6 +60,7 @@
     <tr>
         <th>Nummer</th>
         <th>Richtung</th>
+        <th>Abfahrt in</th>
         <th>Geplante Zeit</th>
         <th>Tatsächliche Zeit</th>
     </tr>
@@ -78,6 +79,7 @@
             </div>
             {% endif %}
         </td>
+        <td>{{ info.mixed_time }} {{ info.mixed_time_unit }}</td>
         <td>{{ info.planned_time }}</td>
         <td>{{ info.actual_time }}</td>
     </tr>
