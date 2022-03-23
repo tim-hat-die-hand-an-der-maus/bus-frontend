@@ -12,4 +12,6 @@ ADD flask_templates /usr/app/flask_templates
 ADD public /usr/app/public
 ADD app.py /usr/app/app.py
 
+ENV TZ=Europe/Berlin
+
 CMD ["flask", "run", "--host", "0.0.0.0", "--port", "5000"]
