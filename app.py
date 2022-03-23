@@ -96,4 +96,7 @@ def index(stop_number: int):
     kwargs = {
         "stop": content
     }
+
+    # PyCharm doesn't recognize the changed templates folder
+    # noinspection PyUnresolvedReferences
     return render_template("index.html", **kwargs)
