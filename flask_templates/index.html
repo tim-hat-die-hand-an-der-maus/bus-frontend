@@ -138,7 +138,7 @@
         }
 
         setInterval(() => {
-            fetch("/")
+            fetch(window.location.pathname)
                 .then(result => {
                     result.text().then(html => {
                         document.getElementsByTagName("html")[0].innerHTML = html;
