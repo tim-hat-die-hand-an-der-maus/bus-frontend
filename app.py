@@ -1,4 +1,5 @@
 import dataclasses
+import datetime
 from typing import List, Optional
 
 import requests
@@ -21,18 +22,33 @@ def public(path: str):
 @dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclasses.dataclass
 class StopInfo:
-    actualRelativeTime: int
-    actualTime: str
+    actual_relative_time: int
+    actual_time: str
     direction: str
     mixedTime: str
     passageid: str
-    patternText: str
-    plannedTime: str
-    routeId: str
+    pattern_text: str
+    planned_time: str
+    route_id: str
     status: str
-    tripId: str
-    vehicleId: str
+    trip_id: str
+    vehicle_id: str
     vias: Optional[List[str]] = None
+    time_class: str = "punctual"
+
+    def set_time_class(self):
+        planned = datetime.datetime.strptime(self.planned_time, "%H:%M")
+        actual = datetime.datetime.strptime(self.actual_time, "%H:%M")
+
+        diff = planned - actual
+        if diff.days < 0:
+            if abs(diff.seconds) > 300:
+                self.time_class = "delayed"
+            else:
+                self.time_class = "late"
+        else:
+            if diff.seconds != 0:
+                self.time_class = "early"
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL)
@@ -56,6 +72,7 @@ def get_stop(stop_number: int = 180):
 @app.route('/<stop_number>')
 def index(stop_number: int):
     content: Stop = get_stop(stop_number)
+    [info.set_time_class() for info in content.actual]
 
     kwargs = {
         "stop": content

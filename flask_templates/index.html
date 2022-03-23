@@ -21,10 +21,27 @@
 
         .via {
             margin-right: 5px;
+            color: #333;
         }
 
         .vias {
             margin-top: 5px;
+        }
+
+        .punctual {
+            background-color: inherit;
+        }
+
+        .early {
+            background-color: #00cc00;
+        }
+
+        .delayed {
+            background-color: #FFA500;
+        }
+
+        .late {
+            background-color: #cc0000;
         }
     </style>
 </head>
@@ -49,20 +66,20 @@
 </thead>
 <tbody>
 {% for info in stop.actual %}
-    <tr>
-        <td>{{ info.patternText }}</td>
+    <tr class="{{ info.time_class }}">
+        <td>{{ info.pattern_text }}</td>
         <td>
             <div>{{ info.direction }}</div>
             {% if info.vias %}
             <div class="vias">
                 {% for via in info.vias %}
-                <span class="via">{{ via }}</span>
+                <div class="via">{{ via }}</div>
                 {% endfor %}
             </div>
             {% endif %}
         </td>
-        <td>{{ info.plannedTime }}</td>
-        <td>{{ info.actualTime }}</td>
+        <td>{{ info.planned_time }}</td>
+        <td>{{ info.actual_time }}</td>
     </tr>
 {% endfor %}
 </tbody>
