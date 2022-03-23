@@ -136,6 +136,15 @@
 
             window.location.pathname = "/" + stopId;
         }
+
+        setInterval(() => {
+            fetch("/")
+                .then(result => {
+                    result.text().then(html => {
+                        document.getElementsByTagName("html")[0].innerHTML = html;
+                    })
+                })
+        }, 30000)
     </script>
 </head>
 <body>
