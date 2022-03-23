@@ -1,0 +1,31 @@
+namespace: timhatdiehandandermaus
+
+deployment:
+  name: bus-frontend
+  image: ghcr.io/tim-hat-die-hand-an-der-maus/bus-frontend:__TAG__
+  imagePullPolicy: Always
+  revisionHistoryLimit: 1
+  replicas: 2
+  ports:
+  - 5000
+  labels:
+    app: bus-frontend
+  requests:
+    cpu: 50m
+    memory: 10Mi
+  limit:
+    cpu: 300m
+    memory: 50Mi
+
+service:
+  name: bus-frontend
+  port: 80
+  targetPort: 5000
+  appSelector: bus-frontend
+
+ingress:
+  hosts:
+    - bus.timhatdiehandandermaus.consulting
+  secret: tls-bus-frontend
+  issuer: letsencrypt-issuer-http
+  name: bus-frontend
