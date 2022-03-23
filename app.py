@@ -57,9 +57,6 @@ class StopInfo:
         planned = datetime.strptime(self.planned_time, "%H:%M")
         actual = datetime.strptime(self.actual_time, "%H:%M")
 
-        mixed_time = int(self.mixed_time)
-        # TODO: add {unit} -> minute conversion if other units exist
-
         diff = planned - actual
         if diff.days < 0:
             if abs(diff.seconds) > 300:
