@@ -172,7 +172,7 @@
         <tr class="{{ info.time_class }}">
             <td class="cell_time">
                 <span class="time">{{ info.actual_time }}</span>
-                <span class="tripID">{{ info.vehicle_type }} {{ info.pattern_text }}</span>
+                <span class="tripID" {% if info.route %}title="Betrieben von: {{ info.route.authority }}"{% endif %}>{{ info.vehicle_type }} {{ info.pattern_text }}</span>
             </td>
             <td class="direction-td">
                 <span class="direction {{ info.time_class }}" title="{% if route %}{{ route.alerts | join(', ') }} {% endif %}">{{ info.direction }}</span>
