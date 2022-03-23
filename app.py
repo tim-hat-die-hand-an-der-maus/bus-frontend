@@ -11,7 +11,7 @@ app = Flask("bus", template_folder="flask_templates")
 
 @app.route("/favicon.ico")
 def favicon():
-    return send_from_directory('public', "favicon.ico")
+    return send_from_directory('public', "favicon.jpg")
 
 
 @app.route("/public/<path:path>")

@@ -1,8 +1,4 @@
-recommendations
-matches
-*.jpg
 *.json
-headers
 
 __pycache__
 venv
