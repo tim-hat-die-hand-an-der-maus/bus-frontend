@@ -6,26 +6,109 @@
             font-size: 14px;
             height: 98%;
             width: 98%;
+            background-color: #000080;
+            color: #ffffff;
+            font-family: arial, serif;
         }
 
         table {
-            height: 95%;
-            width: 95%;
-            text-align: center;
-            border: 1px solid #000;
+            height: 100%;
+            width: 100%;
+            text-align: left;
+            table-left: fixed;
+            clear: both;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        th {
+            background-color: #FFFF00;
+            color: #000;
+            font-size: 32px;
         }
 
         td, th {
             padding: 5px;
         }
 
+        td {
+            font-weight: bold;
+            font-size: 26px;
+        }
+
+        tr {
+            background: none repeat scroll 0 0 transparent;
+            border: 0 none;
+            font-size: 100%;
+            margin: 0;
+            outline: 0 none;
+            padding: 0;
+            vertical-align: baseline;
+        }
+
         .via {
             margin-right: 5px;
-            color: #333;
         }
 
         .vias {
             margin-top: 5px;
+        }
+
+        #titleBar {
+            background-color: #000080;
+            font-size: 42px;
+            font-weight: bold;
+            overflow: hidden;
+            text-align: left;
+            width: 100%;
+            color: #FFFFFF;
+        }
+
+        #titleBarLeft {
+            float: left;
+            width: 200px;
+            height: 100%;
+            text-align: left;
+        }
+
+        #titleBarRight {
+            float: right;
+            height: 100%;
+        }
+
+        #titleBarCenter {
+            margin: 5px 210px 0 200px;
+            min-height: 100%;
+            height: 100%;
+            text-align: center;
+        }
+
+        .cell_time {
+            background-color: #FFFFFF;
+            color: #000080;
+            text-align: left;
+            width: 6%;
+        }
+
+        .time {
+            font-size: 32px;
+        }
+
+        .tripID {
+            font-size: 18px;
+        }
+
+        .time, .tripID {
+            display: block;
+        }
+
+        #titleBarClear {
+            clear: both;
+        }
+
+        .direction {
+            -webkit-marquee: auto medium infinite scroll normal;
+            overflow-x: -webkit-marquee;
         }
 
         .punctual {
@@ -47,43 +130,54 @@
 </head>
 <body>
 {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class="flashes">
-    {% for message in messages %}
-      <li style=" list-style-type: none;"><h6 style="color: #ff0000;">{{ message }}</h6></li>
-    {% endfor %}
-    </ul>
-  {% endif %}
+    {% if messages %}
+        <ul class="flashes">
+            {% for message in messages %}
+                <li style=" list-style-type: none;"><h6 style="color: #ff0000;">{{ message }}</h6></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 {% endwith %}
+<div id="titleBar">
+    <div id="titleBarLeft"><span id="actualTime">{{ time }}</span></div>
+    <div id="titleBarRight"></div>
+    <div id="titleBarCenter">
+        <span id="eventType">Abfahrt</span>
+        <span id="stationName">{{ stop.stopName }}</span>
+    </div>
+    <div id="titleBarClear"></div>
+</div>
 <table rules="rows">
-<thead>
+    <thead>
     <tr>
-        <th>Nummer</th>
-        <th>Richtung</th>
+        <th>Zeit</th>
+        <th>Nach</th>
+        <th>Über</th>
         <th>Abfahrt in</th>
-        <th>Geplante Zeit</th>
-        <th>Tatsächliche Zeit</th>
+        <th>Geplant</th>
     </tr>
-</thead>
-<tbody>
-{% for info in stop.actual %}
-    <tr class="{{ info.time_class }}">
-        <td>{{ info.pattern_text }}</td>
-        <td>
-            <div>{{ info.direction }}</div>
-            {% if info.vias %}
-            <div class="vias">
-                {% for via in info.vias %}
-                <div class="via">{{ via }}</div>
-                {% endfor %}
-            </div>
-            {% endif %}
-        </td>
-        <td>{{ info.mixed_time }} {{ info.mixed_time_unit }}</td>
-        <td>{{ info.planned_time }}</td>
-        <td>{{ info.actual_time }}</td>
-    </tr>
-{% endfor %}
-</tbody>
+    </thead>
+    <tbody>
+    {% for info in stop.actual %}
+        <tr class="{{ info.time_class }}">
+            <td class="cell_time">
+                <span class="time" title="Geplant: {{ info.planned_time }}">{{ info.actual_time }}</span>
+                <span class="tripID">S {{ info.pattern_text }}</span>
+            </td>
+            <td>
+                <span class="direction">{{ info.direction }}</span>
+            </td>
+            <td>
+                {% if info.vias %}
+                    <marquee class="vias">
+                        {{ info.vias | join(", ") }}
+                    </marquee>
+                {% endif %}
+            </td>
+            <td>{{ info.mixed_time }} {{ info.mixed_time_unit }}</td>
+            <td>{{ info.planned_time }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
 </table>
 </body>

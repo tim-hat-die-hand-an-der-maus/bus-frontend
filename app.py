@@ -42,6 +42,15 @@ class StopInfo:
     actual_time: str = ""
     vehicle_id: str = ""
 
+    def update(self):
+        self.update_mixed_time()
+        self.set_time_class()
+        self.update_vias()
+
+    def update_vias(self):
+        if self.vias:
+            self.vias = [via.replace("via ", "") for via in self.vias]
+
     def update_mixed_time(self):
         s = self.mixed_time.split(" ")
         if len(s) < 2:
@@ -67,11 +76,15 @@ class StopInfo:
             if diff.seconds != 0:
                 self.time_class = "early"
 
+        # TODO
+        self.time_class = "punctual"
+
 
 @dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclasses.dataclass
 class Stop:
     actual: List[StopInfo]
+    stopName: str
 
 
 def get_stop(stop_number: int = 180):
@@ -90,11 +103,11 @@ def get_stop(stop_number: int = 180):
 def index(stop_number: int):
     content: Stop = get_stop(stop_number)
 
-    [info.update_mixed_time() for info in content.actual]
-    [info.set_time_class() for info in content.actual]
+    [info.update() for info in content.actual]
 
     kwargs = {
-        "stop": content
+        "stop": content,
+        "time": datetime.now().strftime("%H:%M")
     }
 
     # PyCharm doesn't recognize the changed templates folder
