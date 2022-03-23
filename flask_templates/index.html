@@ -117,6 +117,17 @@
         .late {
             background-color: #cc0000;
         }
+
+        .direction-td {
+            width: 1%;
+            white-space: nowrap;
+        }
+
+        .departure, .planned {
+            text-align: right;
+            width: 1%;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -144,7 +155,7 @@
         <th>Zeit</th>
         <th>Nach</th>
         <th>Über</th>
-        <th>Abfahrt in</th>
+        <th style="white-space: nowrap">Abfahrt in</th>
         <th>Geplant</th>
     </tr>
     </thead>
@@ -155,7 +166,7 @@
                 <span class="time">{{ info.actual_time }}</span>
                 <span class="tripID">{{ info.vehicle_type }} {{ info.pattern_text }}</span>
             </td>
-            <td>
+            <td class="direction-td">
                 <span class="direction" title="{% if route %}{{ route.alerts | join(', ') }} {% endif %}">{{ info.direction }}</span>
             </td>
             <td>
@@ -165,8 +176,8 @@
                     </marquee>
                 {% endif %}
             </td>
-            <td>{{ info.mixed_time }} {{ info.mixed_time_unit }}</td>
-            <td>{{ info.planned_time }}</td>
+            <td class="departure">{{ info.mixed_time }} {{ info.mixed_time_unit }}</td>
+            <td class="planned">{{ info.planned_time }}</td>
         </tr>
     {% endfor %}
     </tbody>
