@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="de">
 <head>
-    <title>HST {{  stop.stopName }}</title>
+    <title>HST {{  stop.stop_name }}</title>
     <style>
         body {
             font-size: 14px;
@@ -153,7 +153,7 @@
     <div id="titleBarRight"></div>
     <div id="titleBarCenter">
         <span id="eventType">Abfahrt</span>
-        <span id="stationName">{{ stop.stopName }}</span>
+        <span id="stationName">{{ stop.stop_name }}</span>
     </div>
     <div id="titleBarClear"></div>
 </div>
@@ -195,9 +195,10 @@
                 <label for="stop-select">Haltestelle aussuchen</label>
                 <select id="stop-select" name="stop" onchange="change_stop()">
                 {% for id, name in stops_map.items() %}
-                    <option value="{{ id }}">{{ name }}</option>
+                    <option value="{{ id }}" {% if id == stop.stop_short_name %} selected {% endif %}>{{ name }}</option>
                 {% endfor %}
                 </select>
+                <span>{{ stops_map.items() | length }} Haltestellen</span>
             </td>
         </tr>
     </tfoot>
