@@ -3,7 +3,7 @@ namespace: timhatdiehandandermaus
 deployment:
   name: bus-frontend
   image: ghcr.io/tim-hat-die-hand-an-der-maus/bus-frontend:__TAG__
-  imagePullPolicy: Always
+  imagePullPolicy: IfNotPresent
   revisionHistoryLimit: 1
   replicas: 2
   ports:
