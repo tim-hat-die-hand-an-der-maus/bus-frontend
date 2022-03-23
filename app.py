@@ -1,5 +1,5 @@
 import dataclasses
-import datetime
+from datetime import datetime
 from typing import List, Optional
 
 import requests
@@ -54,15 +54,21 @@ class StopInfo:
         if self.actual_time is None or self.mixed_time_unit == "":
             return
 
+        planned = datetime.strptime(self.planned_time, "%H:%M")
+        actual = datetime.strptime(self.actual_time, "%H:%M")
+
         mixed_time = int(self.mixed_time)
         # TODO: add {unit} -> minute conversion if other units exist
 
-        if mixed_time < 0:
-            self.time_class = "early"
-        elif mixed_time <= 5:
-            self.time_class = "delayed"
-        elif mixed_time > 5:
-            self.time_class = "late"
+        diff = planned - actual
+        if diff.days < 0:
+            if abs(diff.seconds) > 300:
+                self.time_class = "delayed"
+            else:
+                self.time_class = "late"
+        else:
+            if diff.seconds != 0:
+                self.time_class = "early"
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL)
