@@ -19,36 +19,50 @@ def public(path: str):
     return send_from_directory('public', path)
 
 
+TIME_UNIT_CONVERSION_TABLE = {
+    "%UNIT_MIN%": "min"
+}
+
+
 @dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclasses.dataclass
 class StopInfo:
     actual_relative_time: int
-    actual_time: str
     direction: str
-    mixedTime: str
+    mixed_time: str
     passageid: str
     pattern_text: str
     planned_time: str
     route_id: str
     status: str
     trip_id: str
-    vehicle_id: str
     vias: Optional[List[str]] = None
     time_class: str = "punctual"
+    mixed_time_unit: str = ""
+    actual_time: str = ""
+    vehicle_id: str = ""
+
+    def update_mixed_time(self):
+        s = self.mixed_time.split(" ")
+        if len(s) < 2:
+            return
+
+        self.mixed_time = s[0]
+        self.mixed_time_unit = TIME_UNIT_CONVERSION_TABLE[s[1]]
 
     def set_time_class(self):
-        planned = datetime.datetime.strptime(self.planned_time, "%H:%M")
-        actual = datetime.datetime.strptime(self.actual_time, "%H:%M")
+        if self.actual_time is None or self.mixed_time_unit == "":
+            return
 
-        diff = planned - actual
-        if diff.days < 0:
-            if abs(diff.seconds) > 300:
-                self.time_class = "delayed"
-            else:
-                self.time_class = "late"
-        else:
-            if diff.seconds != 0:
-                self.time_class = "early"
+        mixed_time = int(self.mixed_time)
+        # TODO: add {unit} -> minute conversion if other units exist
+
+        if mixed_time < 0:
+            self.time_class = "early"
+        elif mixed_time <= 5:
+            self.time_class = "delayed"
+        elif mixed_time > 5:
+            self.time_class = "late"
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL)
@@ -72,6 +86,8 @@ def get_stop(stop_number: int = 180):
 @app.route('/<stop_number>')
 def index(stop_number: int):
     content: Stop = get_stop(stop_number)
+
+    [info.update_mixed_time() for info in content.actual]
     [info.set_time_class() for info in content.actual]
 
     kwargs = {
