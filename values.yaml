@@ -28,5 +28,5 @@ ingress:
     - bus.timhatdiehandandermaus.consulting
     - tram.timhatdiehandandermaus.consulting
   secret: tls-bus-frontend
-  issuer: letsencrypt-issuer-http
+  issuer: letsencrypt-issuer
   name: bus-frontend
