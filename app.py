@@ -5,10 +5,12 @@ from typing import List, Optional
 import requests
 from dataclasses_json import LetterCase, dataclass_json
 from flask import Flask, render_template, send_from_directory
+from flask_minify import Minify
 
 import config
 
 app = Flask("bus", template_folder="flask_templates")
+Minify(app=app, html=True, js=True, cssless=True)
 
 
 @app.route("/favicon.ico")
