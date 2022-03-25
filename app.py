@@ -1,10 +1,14 @@
 import dataclasses
+import os
 import re
+import shutil
 import threading
+import time
 from datetime import datetime
 from typing import List, Optional
 
 import requests
+import schedule as schedule
 from dataclasses_json import LetterCase, dataclass_json
 from flask import Flask, render_template, send_from_directory, abort, request
 from flask_minify import Minify
@@ -16,6 +20,7 @@ Minify(app=app, html=True, js=True, cssless=True)
 
 image_re: str = ""
 image_rt: str = ""
+last_request_timestamp: datetime = datetime.now()
 
 
 @app.route("/favicon.ico")
@@ -134,6 +139,32 @@ def get_stop(stop_number: str = "180"):
     return None
 
 
+def download_webcam_image(pic_id: str):
+    url = webcam_image(pic_id)
+    tmp_path = f"public/images/tmp.jpg"
+    path = f"public/images/{pic_id}.jpg"
+
+    req = requests.get(url, stream=True)
+    if req.ok:
+        with open(tmp_path, 'wb') as f:
+            req.raw.decode_content = True
+            shutil.copyfileobj(req.raw, f)
+
+        if os.path.getsize(tmp_path) != 878:
+            os.rename(tmp_path, path)
+
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+
+
+def download_images():
+    if (datetime.now() - last_request_timestamp).seconds > 300:
+        return
+
+    for stop_number in config.STOP_WEBCAM_ID_TABLE.keys():
+        download_webcam_image(stop_number)
+
+
 @app.route("/webcam/session", methods=["UPDATE"])
 def update_image_session_parameter(
         base_url: str = "https://www.mobil-potsdam.de/de/verkehrsmeldungen/webcams-desktop/"):
@@ -172,6 +203,9 @@ def webcam_image(stop_number: str):
 @app.route('/', defaults={'stop_number': "180"})
 @app.route('/<stop_number>')
 def index(stop_number: str):
+    global last_request_timestamp
+    last_request_timestamp = datetime.now()
+
     content: Stop = get_stop(stop_number)
 
     try:
@@ -184,7 +218,8 @@ def index(stop_number: str):
         "stop": content,
         "time": datetime.now().strftime("%H:%M"),
         "stops_map": config.STOPS_CONVERSION_TABLE,
-        "webcam_url": webcam_image(stop_number),
+        # "webcam_url": webcam_image(stop_number),
+        "webcam_url": f"/public/images/{stop_number}.jpg",
         "show_image": show_image == "true"
     }
 
@@ -193,4 +228,12 @@ def index(stop_number: str):
     return render_template("index.html", **kwargs)
 
 
-threading.Timer(interval=60.0, function=update_image_session_parameter).start()
+def run_scheduler():
+    schedule.every(5).seconds.do(download_images)
+    schedule.every(60).seconds.do(update_image_session_parameter)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+
+threading.Thread(target=run_scheduler).start()

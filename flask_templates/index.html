@@ -166,16 +166,12 @@
         }
 
         function updateImage() {
-        if (getCookie("showImage") === "true") {
-                fetch(`/webcam/image${window.location.pathname}`)
-                    .then(result => {
-                        result.text().then(url => {
-                            const element = document.getElementById("webcam-image");
-                            if (element != null) {
-                                element.src = url;
-                            }
-                        })
-                    })
+            if (getCookie("showImage") === "true") {
+                const url = `/public/images/{{ stop.stop_short_name }}.jpg?${new Date().getTime()}`;
+                const element = document.getElementById("webcam-image");
+                if (element != null) {
+                    element.src = url;
+                }
             }
         }
 
