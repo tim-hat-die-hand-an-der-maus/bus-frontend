@@ -6,17 +6,19 @@ ENV PYTHONUNBUFFERED 1
 RUN apk add gcc python3-dev build-base linux-headers pcre-dev
 
 WORKDIR /usr/app
+RUN addgroup -S launcher && adduser -S launcher -G launcher -D -u 101
+ADD public /usr/app/public
+RUN chown -R 101:launcher /usr/app/public
+RUN ls /usr/app -ln
+
+USER 101
 
 ENV TZ=Europe/Berlin
-
-RUN addgroup -S launcher && adduser -S launcher -G launcher -D -u 101
-USER 101
 
 ADD requirements.txt .
 RUN pip install --user -r requirements.txt
 
 ADD flask_templates /usr/app/flask_templates
-ADD public /usr/app/public
 ADD app.py /usr/app/app.py
 ADD config.py /usr/app/config.py
 

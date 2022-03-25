@@ -146,15 +146,12 @@ def download_webcam_image(pic_id: str):
 
     req = requests.get(url, stream=True)
     if req.ok:
-        with open(tmp_path, 'wb') as f:
+        with open(tmp_path, 'wb+') as f:
             req.raw.decode_content = True
             shutil.copyfileobj(req.raw, f)
 
         if os.path.getsize(tmp_path) != 878:
             os.rename(tmp_path, path)
-
-        if os.path.exists(tmp_path):
-            os.remove(tmp_path)
 
 
 def download_images():
@@ -219,7 +216,7 @@ def index(stop_number: str):
         "time": datetime.now().strftime("%H:%M"),
         "stops_map": config.STOPS_CONVERSION_TABLE,
         # "webcam_url": webcam_image(stop_number),
-        "webcam_url": f"/public/images/{stop_number}.jpg",
+        "webcam_url": f"/public/images/{stop_number}.jpg?{int(datetime.now().timestamp() * 1000)}",
         "show_image": show_image == "true"
     }
 
