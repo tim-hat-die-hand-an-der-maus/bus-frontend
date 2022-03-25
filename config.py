@@ -34,7 +34,7 @@ STOPS_CONVERSION_TABLE = {"903": "Abstellung Platz der Einheit", "3": "Abzw. Bet
                           "144": "Ecksteinweg", "195": "Ehrenpfortenbergstr.", "145": "Eichenring", "143": "Eichenweg",
                           "152": "Eisbergst\u00fccke", "339": "Eisenbahnbr\u00fccke Marquardt", "705": "Expressbus",
                           "155": "Fahrl\u00e4nder See", "156": "Falkenhorst", "157": "Feuerbachstr.",
-                          "163": "Fi nkenweg/Leipziger Str.", "160": "Filmpark", "162": "Finkenweg/Brauhausberg",
+                          "163": "Finkenweg/Leipziger Str.", "160": "Filmpark", "162": "Finkenweg/Brauhausberg",
                           "165": "Finnenhaus-Siedlung", "168": "Florastr.", "171": "Fontanestr.",
                           "177": "Freiligrathstr.", "179": "Friedenskirche", "982": "Friedenstr.",
                           "180": "Friedh\u00f6fe", "208": "Friedrich-G\u00fcnther-Park", "183": "Friedrich-Wolf-Str.",
