@@ -150,8 +150,13 @@ def download_webcam_image(pic_id: str):
             req.raw.decode_content = True
             shutil.copyfileobj(req.raw, f)
 
+        # size of the `Session expired` image
         if os.path.getsize(tmp_path) != 878:
             os.rename(tmp_path, path)
+        else:
+            update_image_session_parameter()
+            time.sleep(0.5)
+            download_webcam_image(pic_id)
 
 
 def download_images():
