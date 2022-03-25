@@ -163,18 +163,16 @@
             reload();
         }, 30000)
 
-        {% if show_image %}
-            setInterval(() => {
-                if (getCookie("showImage") === "true") {
-                    fetch(`/webcam/image${window.location.pathname}`)
-                        .then(result => {
-                            result.text().then(url => {
-                                document.getElementById("webcam-image").src = url;
-                            })
+        setInterval(() => {
+            if (getCookie("showImage") === "true") {
+                fetch(`/webcam/image${window.location.pathname}`)
+                    .then(result => {
+                        result.text().then(url => {
+                            document.getElementById("webcam-image").src = url;
                         })
-                }
-            }, 5000)
-        {% endif %}
+                    })
+            }
+        }, 5000)
     </script>
 </head>
 <body>
