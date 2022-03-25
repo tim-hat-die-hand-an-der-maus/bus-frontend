@@ -256,7 +256,7 @@
         <td colspan="2" style="text-align: center;">
             <label for="show-image">Webcam anzeigen</label>
             <input onchange="updateWebcamDisplaySetting()" type="checkbox" name="show-image" id="show-image"
-                    {% if show_image %} checked{% endif %}>
+                    {% if webcam_url and show_image %} checked{% endif %}>
             <button onclick="updateWebcamSession()" id="refresh-webcam-session">Refresh</button>
         </td>
     </tr>
