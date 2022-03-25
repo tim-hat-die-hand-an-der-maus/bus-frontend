@@ -141,26 +141,39 @@
             const value = document.querySelector('#show-image').checked;
 
             document.cookie = `showImage=${value}; SameSite=None; Secure`
+            reload();
         }
 
-        setInterval(() => {
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        function reload() {
             fetch(window.location.pathname)
                 .then(result => {
                     result.text().then(html => {
                         document.getElementsByTagName("html")[0].innerHTML = html;
                     })
                 })
+        }
+
+        setInterval(() => {
+            reload();
         }, 30000)
 
         {% if show_image %}
-        setInterval(() => {
-            fetch(`/webcam/image${window.location.pathname}`)
-                .then(result => {
-                    result.text().then(url => {
-                        document.getElementById("webcam-image").src = url;
-                    })
-                })
-        }, 5000)
+            setInterval(() => {
+                if (getCookie("showImage") === "true") {
+                    fetch(`/webcam/image${window.location.pathname}`)
+                        .then(result => {
+                            result.text().then(url => {
+                                document.getElementById("webcam-image").src = url;
+                            })
+                        })
+                }
+            }, 5000)
         {% endif %}
     </script>
 </head>
@@ -233,7 +246,8 @@
             <!--suppress HtmlUnknownTarget -->
             <form>
                 <label for="show-image">Webcam anzeigen</label>
-                <input onchange="updateWebcamDisplaySetting()" type="checkbox" name="show-image" id="show-image" {% if show_image %} checked{% endif %}>
+                <input onchange="updateWebcamDisplaySetting()" type="checkbox" name="show-image" id="show-image"
+                        {% if show_image %} checked{% endif %}>
             </form>
         </td>
     </tr>
