@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="de">
 <head>
-    <title>HST {{  stop.stop_name }}</title>
+    <title>HST {{ stop.stop_name }}</title>
     <style>
         body {
             font-size: 14px;
@@ -137,6 +137,12 @@
             window.location.pathname = "/" + stopId;
         }
 
+        function updateWebcamDisplaySetting() {
+            const value = document.querySelector('#show-image').checked;
+
+            document.cookie = `showImage=${value}; SameSite=None; Secure`
+        }
+
         setInterval(() => {
             fetch(window.location.pathname)
                 .then(result => {
@@ -145,6 +151,17 @@
                     })
                 })
         }, 30000)
+
+        {% if show_image %}
+        setInterval(() => {
+            fetch(`/webcam/image${window.location.pathname}`)
+                .then(result => {
+                    result.text().then(url => {
+                        document.getElementById("webcam-image").src = url;
+                    })
+                })
+        }, 5000)
+        {% endif %}
     </script>
 </head>
 <body>
@@ -181,10 +198,12 @@
         <tr class="{{ info.time_class }}">
             <td class="cell_time">
                 <span class="time">{{ info.actual_time }}</span>
-                <span class="tripID" {% if info.route %}title="Betrieben von: {{ info.route.authority }}"{% endif %}>{{ info.vehicle_type }} {{ info.pattern_text }}</span>
+                <span class="tripID"
+                      {% if info.route %}title="Betrieben von: {{ info.route.authority }}"{% endif %}>{{ info.vehicle_type }} {{ info.pattern_text }}</span>
             </td>
             <td class="direction-td">
-                <span class="direction {{ info.time_class }}" title="{% if route %}{{ route.alerts | join(', ') }} {% endif %}">{{ info.direction }}</span>
+                <span class="direction {{ info.time_class }}"
+                      title="{% if route %}{{ route.alerts | join(', ') }} {% endif %}">{{ info.direction }}</span>
             </td>
             <td>
                 {% if info.vias %}
@@ -199,18 +218,31 @@
     {% endfor %}
     </tbody>
     <tfoot>
-        <tr>
-            <td colspan="5" style="text-align: center">
-                <label for="stop-select">Haltestelle aussuchen</label>
-                <select id="stop-select" name="stop" onchange="change_stop()">
+    <tr>
+        <td colspan="3" style="text-align: center">
+            <label for="stop-select">Haltestelle aussuchen</label>
+            <select id="stop-select" name="stop" onchange="change_stop()">
                 {% for id, name in stops_map.items() %}
-                    <option value="{{ id }}" {% if id == stop.stop_short_name %} selected {% endif %}>{{ name }}</option>
+                    <option value="{{ id }}" {% if id == stop.stop_short_name %}
+                            selected {% endif %}>{{ name }}</option>
                 {% endfor %}
-                </select>
-                <span>{{ stops_map.items() | length }} Haltestellen</span>
-            </td>
-        </tr>
+            </select>
+            <span>{{ stops_map.items() | length }} Haltestellen</span>
+        </td>
+        <td colspan="2" style="text-align: center;">
+            <!--suppress HtmlUnknownTarget -->
+            <form>
+                <label for="show-image">Webcam anzeigen</label>
+                <input onchange="updateWebcamDisplaySetting()" type="checkbox" name="show-image" id="show-image" {% if show_image %} checked{% endif %}>
+            </form>
+        </td>
+    </tr>
     </tfoot>
 </table>
+{% if webcam_url and show_image %}
+    <div>
+        <img id="webcam-image" src="{{ webcam_url }}" alt="Bild wird geladen"/>
+    </div>
+{% endif %}
 </body>
 </html>

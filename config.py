@@ -1,3 +1,7 @@
+STOP_WEBCAM_ID_TABLE = {
+    "180": "77"
+}
+
 STOPS_CONVERSION_TABLE = {"903": "Abstellung Platz der Einheit", "3": "Abzw. Betriebshof ViP",
                           "1": "Abzweig nach Eiche", "2": "Abzweig nach Nedlitz", "14": "Alt Nowawes",
                           "214": "Alt-Golm", "13": "Alt-Kladow", "9": "Alter Markt/Landtag", "10": "Alter Tornow",

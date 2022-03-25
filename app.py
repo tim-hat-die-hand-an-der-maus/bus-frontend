@@ -1,16 +1,23 @@
 import dataclasses
+import re
 from datetime import datetime
-from typing import List, Optional
+from threading import Thread
+from typing import List, Optional, Dict
 
+import flask
 import requests
 from dataclasses_json import LetterCase, dataclass_json
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, abort, request
 from flask_minify import Minify
 
 import config
 
 app = Flask("bus", template_folder="flask_templates")
 Minify(app=app, html=True, js=True, cssless=True)
+
+
+image_re: str = ""
+image_rt: str = ""
 
 
 @app.route("/favicon.ico")
@@ -129,9 +136,34 @@ def get_stop(stop_number: int = 180):
     return None
 
 
+@app.route("/webcam/session", methods=["UPDATE"])
+def update_image_session_parameter(base_url: str = "https://www.mobil-potsdam.de/de/verkehrsmeldungen/webcams-desktop/"):
+    global image_re
+    global image_rt
+    req = requests.get(base_url)
+    if req.ok:
+        if match := re.findall(r"re=(.*?)&rt=(.*?)&", req.content.decode("utf-8")):
+            match = match[0]
+            image_re, image_rt = match[0], match[1]
+    else:
+        print("failed to renew webcam session parameter")
+
+
+@app.route('/webcam/image/', defaults={'stop_number': "180"})
+@app.route("/webcam/image/<stop_number>")
+def webcam_image(stop_number: str):
+    if webcam_id := config.STOP_WEBCAM_ID_TABLE.get(stop_number):
+        timestamp = int(datetime.now().timestamp())
+        url = f"https://www.mobil-potsdam.de/fileadmin/templates_webcams/get_image2.php?type=1&pic={webcam_id}&re={image_re}&rt={image_rt}&{timestamp}"
+        return url
+    else:
+        abort(404)
+
+
 @app.route('/', defaults={'stop_number': 180})
 @app.route('/<stop_number>')
 def index(stop_number: int):
+    Thread(target=update_image_session_parameter).start()
     content: Stop = get_stop(stop_number)
 
     try:
@@ -139,10 +171,20 @@ def index(stop_number: int):
     except AttributeError:
         return "This stop doesn't exist"
 
+    webcam_url = None
+    if webcam_id := config.STOP_WEBCAM_ID_TABLE.get(content.stop_short_name):
+        global image_re
+        global image_rt
+        timestamp = int(datetime.now().timestamp() / 1000)
+        webcam_url = f"https://www.mobil-potsdam.de/fileadmin/templates_webcams/get_image2.php?type=1&pic={webcam_id}&re={image_re}&rt={image_rt}&{timestamp}"
+
+    show_image = request.cookies.get('showImage')
     kwargs = {
         "stop": content,
         "time": datetime.now().strftime("%H:%M"),
         "stops_map": config.STOPS_CONVERSION_TABLE,
+        "webcam_url": webcam_url,
+        "show_image": show_image == "true"
     }
 
     # PyCharm doesn't recognize the changed templates folder
