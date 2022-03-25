@@ -123,7 +123,7 @@ class Stop:
     routes: List[Route]
 
 
-def get_stop(stop_number: int = 180):
+def get_stop(stop_number: str = "180"):
     req = requests.get(
         f"https://www.swp-potsdam.de/internetservice/services/passageInfo/stopPassages/stop?stop={stop_number}&mode=departure&language=en")
 
@@ -139,6 +139,7 @@ def update_image_session_parameter(
         base_url: str = "https://www.mobil-potsdam.de/de/verkehrsmeldungen/webcams-desktop/"):
     global image_re
     global image_rt
+
     req = requests.get(base_url)
     if req.ok:
         if match := re.findall(r"re=(.*?)&rt=(.*?)&", req.content.decode("utf-8")):
@@ -156,17 +157,21 @@ def update_image_session_parameter(
 @app.route('/webcam/image/', defaults={'stop_number': "180"})
 @app.route("/webcam/image/<stop_number>")
 def webcam_image(stop_number: str):
-    if webcam_id := config.STOP_WEBCAM_ID_TABLE.get(stop_number):
-        timestamp = int(datetime.now().timestamp())
+    if not (image_re and image_rt):
+        update_image_session_parameter()
+
+    webcam_id = config.STOP_WEBCAM_ID_TABLE.get(stop_number)
+    if webcam_id and len(image_re) > 0 and len(image_rt) > 0:
+        timestamp = int(datetime.now().timestamp() * 1000)
         url = f"https://www.mobil-potsdam.de/fileadmin/templates_webcams/get_image2.php?type=1&pic={webcam_id}&re={image_re}&rt={image_rt}&{timestamp}"
         return url
     else:
         abort(404)
 
 
-@app.route('/', defaults={'stop_number': 180})
+@app.route('/', defaults={'stop_number': "180"})
 @app.route('/<stop_number>')
-def index(stop_number: int):
+def index(stop_number: str):
     content: Stop = get_stop(stop_number)
 
     try:
@@ -175,9 +180,9 @@ def index(stop_number: int):
         return "This stop doesn't exist"
 
     webcam_url = None
-    if webcam_id := config.STOP_WEBCAM_ID_TABLE.get(content.stop_short_name):
-        global image_re
-        global image_rt
+    global image_re
+    global image_rt
+    if webcam_id := config.STOP_WEBCAM_ID_TABLE.get(stop_number) and image_re and image_rt:
         timestamp = int(datetime.now().timestamp() / 1000)
         webcam_url = f"https://www.mobil-potsdam.de/fileadmin/templates_webcams/get_image2.php?type=1&pic={webcam_id}&re={image_re}&rt={image_rt}&{timestamp}"
 
