@@ -179,19 +179,12 @@ def index(stop_number: str):
     except AttributeError:
         return "This stop doesn't exist"
 
-    webcam_url = None
-    global image_re
-    global image_rt
-    if webcam_id := config.STOP_WEBCAM_ID_TABLE.get(stop_number) and image_re and image_rt:
-        timestamp = int(datetime.now().timestamp() / 1000)
-        webcam_url = f"https://www.mobil-potsdam.de/fileadmin/templates_webcams/get_image2.php?type=1&pic={webcam_id}&re={image_re}&rt={image_rt}&{timestamp}"
-
     show_image = request.cookies.get('showImage')
     kwargs = {
         "stop": content,
         "time": datetime.now().strftime("%H:%M"),
         "stops_map": config.STOPS_CONVERSION_TABLE,
-        "webcam_url": webcam_url,
+        "webcam_url": webcam_image(stop_number),
         "show_image": show_image == "true"
     }
 
