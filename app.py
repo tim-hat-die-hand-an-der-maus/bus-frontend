@@ -155,8 +155,6 @@ def download_webcam_image(pic_id: str):
             os.rename(tmp_path, path)
         else:
             update_image_session_parameter()
-            time.sleep(0.5)
-            download_webcam_image(pic_id)
 
 
 def download_images():
