@@ -211,12 +211,17 @@ def index(stop_number: str):
         return "This stop doesn't exist"
 
     show_image = request.cookies.get('showImage')
+
+    webcam_url = None
+    if config.STOP_WEBCAM_ID_TABLE.get(stop_number):
+        webcam_url = f"/public/images/{stop_number}.jpg?{int(datetime.now().timestamp() * 1000)}"
+
     kwargs = {
         "stop": content,
         "time": datetime.now().strftime("%H:%M"),
         "stops_map": config.STOPS_CONVERSION_TABLE,
         # "webcam_url": webcam_image(stop_number),
-        "webcam_url": f"/public/images/{stop_number}.jpg?{int(datetime.now().timestamp() * 1000)}",
+        "webcam_url": webcam_url,
         "show_image": show_image == "true"
     }
 
