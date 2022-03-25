@@ -129,8 +129,9 @@
             white-space: nowrap;
         }
     </style>
+
     <script type="application/javascript">
-        function change_stop() {
+    function change_stop() {
             const element = document.getElementById("stop-select");
             const stopId = element.options[element.selectedIndex].value;
 
@@ -142,6 +143,11 @@
 
             document.cookie = `showImage=${value}; SameSite=None; Secure`
             reload();
+        }
+
+        function updateWebcamSession() {
+            fetch("/webcam/session", {"method": "UPDATE"});
+            updateImage();
         }
 
         function getCookie(name) {
@@ -159,12 +165,8 @@
                 })
         }
 
-        setInterval(() => {
-            reload();
-        }, 30000)
-
-        setInterval(() => {
-            if (getCookie("showImage") === "true") {
+        function updateImage() {
+        if (getCookie("showImage") === "true") {
                 fetch(`/webcam/image${window.location.pathname}`)
                     .then(result => {
                         result.text().then(url => {
@@ -172,6 +174,14 @@
                         })
                     })
             }
+        }
+
+        setInterval(() => {
+            reload();
+        }, 30000)
+
+        setInterval(() => {
+            updateImage();
         }, 5000)
     </script>
 </head>
@@ -241,12 +251,10 @@
             <span>{{ stops_map.items() | length }} Haltestellen</span>
         </td>
         <td colspan="2" style="text-align: center;">
-            <!--suppress HtmlUnknownTarget -->
-            <form>
-                <label for="show-image">Webcam anzeigen</label>
-                <input onchange="updateWebcamDisplaySetting()" type="checkbox" name="show-image" id="show-image"
-                        {% if show_image %} checked{% endif %}>
-            </form>
+            <label for="show-image">Webcam anzeigen</label>
+            <input onchange="updateWebcamDisplaySetting()" type="checkbox" name="show-image" id="show-image"
+                    {% if show_image %} checked{% endif %}>
+            <button onclick="updateWebcamSession()" id="refresh-webcam-session">Refresh</button>
         </td>
     </tr>
     </tfoot>

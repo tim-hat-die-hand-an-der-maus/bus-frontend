@@ -144,8 +144,13 @@ def update_image_session_parameter(
         if match := re.findall(r"re=(.*?)&rt=(.*?)&", req.content.decode("utf-8")):
             match = match[0]
             image_re, image_rt = match[0], match[1]
+            return "", 200
+        else:
+            print("failed to retrieve new webcam session parameters")
+            abort(500)
     else:
         print("failed to renew webcam session parameter")
+        abort(500)
 
 
 @app.route('/webcam/image/', defaults={'stop_number': "180"})
@@ -190,4 +195,4 @@ def index(stop_number: int):
     return render_template("index.html", **kwargs)
 
 
-threading.Timer(interval=10.0, function=update_image_session_parameter).start()
+threading.Timer(interval=60.0, function=update_image_session_parameter).start()
