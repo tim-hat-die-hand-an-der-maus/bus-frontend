@@ -1,10 +1,9 @@
 import dataclasses
 import re
+import threading
 from datetime import datetime
-from threading import Thread
-from typing import List, Optional, Dict
+from typing import List, Optional
 
-import flask
 import requests
 from dataclasses_json import LetterCase, dataclass_json
 from flask import Flask, render_template, send_from_directory, abort, request
@@ -14,7 +13,6 @@ import config
 
 app = Flask("bus", template_folder="flask_templates")
 Minify(app=app, html=True, js=True, cssless=True)
-
 
 image_re: str = ""
 image_rt: str = ""
@@ -137,7 +135,8 @@ def get_stop(stop_number: int = 180):
 
 
 @app.route("/webcam/session", methods=["UPDATE"])
-def update_image_session_parameter(base_url: str = "https://www.mobil-potsdam.de/de/verkehrsmeldungen/webcams-desktop/"):
+def update_image_session_parameter(
+        base_url: str = "https://www.mobil-potsdam.de/de/verkehrsmeldungen/webcams-desktop/"):
     global image_re
     global image_rt
     req = requests.get(base_url)
@@ -163,7 +162,6 @@ def webcam_image(stop_number: str):
 @app.route('/', defaults={'stop_number': 180})
 @app.route('/<stop_number>')
 def index(stop_number: int):
-    Thread(target=update_image_session_parameter).start()
     content: Stop = get_stop(stop_number)
 
     try:
@@ -190,3 +188,6 @@ def index(stop_number: int):
     # PyCharm doesn't recognize the changed templates folder
     # noinspection PyUnresolvedReferences
     return render_template("index.html", **kwargs)
+
+
+threading.Timer(interval=10.0, function=update_image_session_parameter).start()
