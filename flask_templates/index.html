@@ -144,7 +144,7 @@
         function updateWebcamDisplaySetting() {
             const value = document.querySelector('#show-image').checked;
 
-            document.cookie = `showImage=${value}; SameSite=None; Secure`
+            document.cookie = `showImage=${value}; SameSite=Strict`
             reload();
         }
 
