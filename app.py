@@ -145,6 +145,7 @@ def download_webcam_image(pic_id: str):
     tmp_path = f"public/images/tmp.jpg"
     path = f"public/images/{pic_id}.jpg"
 
+    print(f"download {url}")
     req = requests.get(url, stream=True)
     if req.ok:
         with open(tmp_path, 'wb+') as f:
@@ -156,6 +157,8 @@ def download_webcam_image(pic_id: str):
             os.rename(tmp_path, path)
         else:
             update_image_session_parameter()
+    else:
+        print(f"request NOK: {req.content}")
 
 
 def download_images():
@@ -177,6 +180,7 @@ def update_image_session_parameter(
         if match := re.findall(r"re=(.*?)&rt=(.*?)&", req.content.decode("utf-8")):
             match = match[0]
             image_re, image_rt = match[0], match[1]
+            print(f"updated session parameter: {image_re} | {image_rt}")
             return "", 200
         else:
             print("failed to retrieve new webcam session parameters")
