@@ -7,6 +7,7 @@ import time
 from datetime import datetime
 from typing import List, Optional
 
+import flask
 import requests
 import schedule as schedule
 from dataclasses_json import LetterCase, dataclass_json
@@ -195,7 +196,9 @@ def webcam_image(stop_number: str):
     if webcam_id and len(image_re) > 0 and len(image_rt) > 0:
         timestamp = int(datetime.now().timestamp() * 1000)
         url = f"https://www.mobil-potsdam.de/fileadmin/templates_webcams/get_image2.php?type=1&pic={webcam_id}&re={image_re}&rt={image_rt}&{timestamp}"
-        return url
+        response = flask.Response(url)
+        response.headers["Cache-Control"] = "no-cache"
+        return response
     else:
         abort(404)
 
