@@ -141,7 +141,7 @@ def get_stop(stop_number: str = "180"):
 
 
 def download_webcam_image(pic_id: str):
-    url = webcam_image(pic_id)
+    url = webcam_image(pic_id).data
     tmp_path = f"public/images/tmp.jpg"
     path = f"public/images/{pic_id}.jpg"
 
@@ -192,7 +192,7 @@ def update_image_session_parameter(
 
 @app.route('/webcam/image/', defaults={'stop_number': "180"})
 @app.route("/webcam/image/<stop_number>")
-def webcam_image(stop_number: str):
+def webcam_image(stop_number: str) -> flask.Response:
     if not (image_re and image_rt):
         update_image_session_parameter()
 
