@@ -172,6 +172,9 @@ def download_images():
 @app.route("/webcam/session", methods=["UPDATE"])
 def update_image_session_parameter(
         base_url: str = "https://www.mobil-potsdam.de/de/verkehrsmeldungen/webcams-desktop/"):
+    if (datetime.now() - last_request_timestamp).seconds > 300:
+        return
+
     global image_re
     global image_rt
 
