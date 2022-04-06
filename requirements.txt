@@ -1,6 +1,6 @@
 requests==2.27.1
-flask==2.1.0
+flask==2.1.1
 dataclasses_json==0.5.7
 uwsgi==2.0.20
-flask_minify==0.37
+flask_minify==0.39
 schedule==1.1.0
