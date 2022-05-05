@@ -24,6 +24,11 @@ image_rt: str = ""
 last_request_timestamp: datetime = datetime.now()
 
 
+TIME_UNIT_CONVERSION_TABLE = {
+    "%UNIT_MIN%": "min"
+}
+
+
 @app.route("/favicon.ico")
 def favicon():
     return send_from_directory('public', "favicon.jpg")
@@ -40,9 +45,9 @@ def public(path: str):
     return send_from_directory('public', path)
 
 
-TIME_UNIT_CONVERSION_TABLE = {
-    "%UNIT_MIN%": "min"
-}
+@app.route("/health")
+def health():
+    return "", 200
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL)

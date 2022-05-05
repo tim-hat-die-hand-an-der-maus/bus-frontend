@@ -34,3 +34,12 @@ spec:
           limits:
             cpu: {{ .Values.deployment.limit.cpu }}
             memory: {{ .Values.deployment.limit.memory }}
+        livenessProbe:
+          httpGet:
+            port: {{ .Values.service.targetPort }}
+        readinessProbe:
+          httpGet:
+            port: {{ .Values.service.targetPort }}
+        startupProbe:
+          httpGet:
+            port: {{ .Values.service.targetPort }}
