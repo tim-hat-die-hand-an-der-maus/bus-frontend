@@ -31,6 +31,12 @@ def favicon():
 
 @app.route("/public/<path:path>")
 def public(path: str):
+    if "images" in path:
+        stop_number = request.args.to_dict().get("stop_number")
+        extension = path.rsplit(".")[-1]
+        path = f"images/{stop_number}.{extension}"
+        print(path)
+
     return send_from_directory('public', path)
 
 
@@ -227,7 +233,7 @@ def index(stop_number: str):
 
     webcam_url = None
     if config.STOP_WEBCAM_ID_TABLE.get(stop_number):
-        webcam_url = f"/public/images/{stop_number}.jpg?{int(datetime.now().timestamp() * 1000)}"
+        webcam_url = f"/public/images/{int(datetime.now().timestamp() * 1000)}.jpg?stop_number={stop_number}"
 
     kwargs = {
         "stop": content,

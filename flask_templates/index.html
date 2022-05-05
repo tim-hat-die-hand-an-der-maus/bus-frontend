@@ -176,7 +176,7 @@
         function updateImage() {
             if (getCookie("showImage") === "true") {
                 const timestamp = new Date().getTime();
-                const url = `/public/images/{{ stop.stop_short_name }}.jpg?${timestamp}`;
+                const url = `/public/images/${timestamp}.jpg?stop_number={{ stop.stop_short_name }}`;
 
                 const element = document.getElementById("webcam-image");
                 if (element != null) {
