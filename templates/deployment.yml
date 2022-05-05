@@ -34,15 +34,16 @@ spec:
           limits:
             cpu: {{ .Values.deployment.limit.cpu }}
             memory: {{ .Values.deployment.limit.memory }}
+        {{ $healthPath := .Values.deployment.healthEndpoint | default "/health" }}
         livenessProbe:
           httpGet:
             port: {{ .Values.service.targetPort }}
-            path: /health
+            path: {{ $healthPath }}
         readinessProbe:
           httpGet:
             port: {{ .Values.service.targetPort }}
-            path: /health
+            path: {{ $healthPath }}
         startupProbe:
           httpGet:
             port: {{ .Values.service.targetPort }}
-            path: /health
+            path: {{ $healthPath }}
