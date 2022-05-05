@@ -37,9 +37,12 @@ spec:
         livenessProbe:
           httpGet:
             port: {{ .Values.service.targetPort }}
+            path: /health
         readinessProbe:
           httpGet:
             port: {{ .Values.service.targetPort }}
+            path: /health
         startupProbe:
           httpGet:
             port: {{ .Values.service.targetPort }}
+            path: /health
