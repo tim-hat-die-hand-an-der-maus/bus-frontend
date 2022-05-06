@@ -27,6 +27,9 @@ spec:
         - containerPort: {{ $port }}
           protocol: TCP
         {{- end }}
+        envFrom:
+          - configMapRef:
+              name: {{ .Values.configmap.name }}
         resources:
           requests:
             cpu: {{ .Values.deployment.requests.cpu }}
