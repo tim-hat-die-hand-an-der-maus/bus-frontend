@@ -22,8 +22,7 @@ Minify(app=app, html=True, js=True, cssless=True)
 image_re: str = ""
 image_rt: str = ""
 last_request_timestamp: datetime = datetime.now()
-
-
+IMAGES_BASE_URL = os.getenv("IMAGES_BASE_URL") or ""
 TIME_UNIT_CONVERSION_TABLE = {
     "%UNIT_MIN%": "min"
 }
@@ -238,13 +237,12 @@ def index(stop_number: str):
 
     webcam_url = None
     if config.STOP_WEBCAM_ID_TABLE.get(stop_number):
-        webcam_url = f"/public/images/{int(datetime.now().timestamp() * 1000)}.jpg?stop_number={stop_number}"
+        webcam_url = f"{IMAGES_BASE_URL}/public/images/{int(datetime.now().timestamp() * 1000)}.jpg?stop_number={stop_number}"
 
     kwargs = {
         "stop": content,
         "time": datetime.now().strftime("%H:%M"),
         "stops_map": config.STOPS_CONVERSION_TABLE,
-        # "webcam_url": webcam_image(stop_number),
         "webcam_url": webcam_url,
         "show_image": show_image == "true"
     }

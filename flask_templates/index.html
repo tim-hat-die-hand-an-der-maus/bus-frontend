@@ -175,8 +175,14 @@
 
         function updateImage() {
             if (getCookie("showImage") === "true") {
+                let base_url = "";
+
+                if (window.location.hostname.includes("timhatdiehandandermaus.consulting")) {
+                    base_url = "images.timhatdiehandandermaus.consulting";
+                }
+
                 const timestamp = new Date().getTime();
-                const url = `/public/images/${timestamp}.jpg?stop_number={{ stop.stop_short_name }}`;
+                const url = `${base_url}/public/images/${timestamp}.jpg?stop_number={{ stop.stop_short_name }}`;
 
                 const element = document.getElementById("webcam-image");
                 if (element != null) {
