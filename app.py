@@ -237,7 +237,7 @@ def index(stop_number: str):
 
     webcam_url = None
     if config.STOP_WEBCAM_ID_TABLE.get(stop_number):
-        webcam_url = f"{IMAGES_BASE_URL}/public/images/{int(datetime.now().timestamp() * 1000)}.jpg?stop_number={stop_number}"
+        webcam_url = f"https://{IMAGES_BASE_URL}/public/images/{int(datetime.now().timestamp() * 1000)}.jpg?stop_number={stop_number}"
 
     kwargs = {
         "stop": content,
