@@ -217,6 +217,21 @@ def webcam_image(stop_number: str) -> flask.Response:
         abort(404)
 
 
+@app.route('/setcookie', methods=['GET', 'POST'])
+def setcookie():
+    if request.method == "POST":
+        cookie_value = request.form.get("show-image")
+    else:
+        cookie_value = request.args.get("show-image")
+    cookie_value = "true" if cookie_value else "false"
+    stop_number = request.args.get('stop_number')
+
+    resp = flask.redirect(f"/{stop_number}")
+    resp.set_cookie('showImage', cookie_value, samesite="STRICT")
+
+    return resp
+
+
 @app.route("/", methods=["POST"])
 def form():
     stop = request.form.get("stop")

@@ -219,8 +219,6 @@
     </div>
     <div id="titleBarClear"></div>
 </div>
-<noscript>
-</noscript>
 <table rules="rows">
     <thead>
     <tr>
@@ -237,7 +235,8 @@
             <td class="cell_time">
                 <span class="time">{{ info.actual_time }}</span>
                 <span class="tripID"
-                      {% if info.route %}title="Betrieben von: {{ info.route.authority }}"{% endif %}>{{ info.vehicle_type }} {% if info.pattern_text %} {{ info.pattern_text }} {% endif %}</span>
+                      {% if info.route %}title="Betrieben von: {{ info.route.authority }}"{% endif %}>{{ info.vehicle_type }}
+                    {% if info.pattern_text %} {{ info.pattern_text }} {% endif %}</span>
             </td>
             <td class="direction-td">
                 <span class="direction {{ info.time_class }}"
@@ -280,10 +279,16 @@
         </td>
         <td colspan="2" style="text-align: center;">
             {% if webcam_url %}
-                <label for="show-image">Webcam anzeigen</label>
-                <input onchange="updateWebcamDisplaySetting()" type="checkbox" name="show-image" id="show-image"
-                        {% if show_image %} checked{% endif %}>
-                <button onclick="updateWebcamSession()" id="refresh-webcam-session">Refresh</button>
+                <form action="/setcookie" method="GET">
+                    <label for="show-image">Webcam anzeigen</label>
+                    <input type="hidden" name="stop_number" value="{{ stop.stop_short_name }}"/>
+                    <input onchange="updateWebcamDisplaySetting()" type="checkbox" name="show-image" id="show-image"
+                           value="{{ show_image | lower }}"{% if show_image %} checked{% endif %}>
+                    <button onclick="updateWebcamSession()" id="refresh-webcam-session">Refresh</button>
+                    <noscript>
+                        <button type="submit">Speichern</button>
+                    </noscript>
+                </form>
             {% endif %}
         </td>
     </tr>
