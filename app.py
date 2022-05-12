@@ -73,11 +73,11 @@ class StopInfo:
     direction: str
     mixed_time: str
     passageid: str
-    pattern_text: str
     planned_time: str
     route_id: str
     status: str
     trip_id: str
+    pattern_text: Optional[str] = None
     vias: Optional[List[str]] = None
     time_class: str = "punctual"
     mixed_time_unit: str = ""
