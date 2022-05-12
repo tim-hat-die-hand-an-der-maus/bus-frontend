@@ -11,7 +11,7 @@ import flask
 import requests
 import schedule as schedule
 from dataclasses_json import LetterCase, dataclass_json
-from flask import Flask, render_template, send_from_directory, abort, request
+from flask import Flask, render_template, send_from_directory, abort, request, redirect
 from flask_minify import Minify
 
 import config
@@ -217,8 +217,15 @@ def webcam_image(stop_number: str) -> flask.Response:
         abort(404)
 
 
-@app.route('/', defaults={'stop_number': "180"})
-@app.route('/<stop_number>')
+@app.route("/", methods=["POST"])
+def form():
+    stop = request.form.get("stop")
+
+    return redirect(f"/{stop}")
+
+
+@app.route('/', defaults={'stop_number': "180"}, methods=["GET"])
+@app.route('/<stop_number>', methods=["GET"])
 def index(stop_number: str):
     global last_request_timestamp
     last_request_timestamp = datetime.now()
