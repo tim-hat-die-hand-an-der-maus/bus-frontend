@@ -226,7 +226,6 @@
     <div id="titleBarCenter">
         <span id="eventType">Abfahrt</span>
         <span id="stationName">{{ stop.stop_name }}</span>
-        <a href="/search/{{ stop.urlencoded_name }}" target="_blank" id="searchConnection">(Verbindung suchen)</a>
     </div>
     <div id="titleBarClear"></div>
 </div>
@@ -307,6 +306,11 @@
                     </noscript>
                 </form>
             {% endif %}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4" style="text-align: center;">
+            <a href="/search/{{ stop.urlencoded_name }}" target="_blank" id="searchConnection">(Verbindung suchen)</a>
         </td>
     </tr>
     </tfoot>
