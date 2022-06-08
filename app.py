@@ -91,17 +91,13 @@ class StopInfo:
         self.set_time_class()
         self.update_vias()
 
-        route = [route for route in routes if route.short_name == self.pattern_text]
+        route = [route for route in routes if route.id == self.route_id]
         if route:
             self.route = route[0]
-            self.set_route_information()
 
     def update_vias(self):
         if self.vias:
             self.vias = [via.replace("via ", "") for via in self.vias]
-
-    def set_route_information(self):
-        self.vehicle_type = self.route.route_type.capitalize()
 
     def update_mixed_time(self):
         s = self.mixed_time.split(" ")
