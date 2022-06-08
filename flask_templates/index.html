@@ -233,7 +233,13 @@
     {% for info in stop.actual %}
         <tr class="{{ info.time_class }}">
             <td class="cell_time">
-                <span class="time">{{ info.actual_time }}</span>
+                <span class="time">
+                    {% if info.actual_time %}
+                        {{ info.actual_time }}
+                    {% else %}
+                        <span style="color: #999;" title="Geplante Zeit nicht verfügbar">{{ info.planned_time }}</span>
+                    {% endif %}
+                </span>
                 <span class="tripID"
                       {% if info.route %}title="Betrieben von: {{ info.route.authority }}"{% endif %}>{{ info.route.route_type | capitalize }}
                     {% if info.route.name %} {{ info.route.name }} {% endif %}</span>
