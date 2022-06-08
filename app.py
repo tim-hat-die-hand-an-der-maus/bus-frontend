@@ -4,10 +4,12 @@ import re
 import shutil
 import threading
 import time
-from datetime import datetime
-from typing import List, Optional
+import urllib.parse
+from datetime import datetime, tzinfo
+from typing import List, Optional, Dict
 
 import flask
+import fuzzywuzzy.fuzz
 import requests
 import schedule as schedule
 from dataclasses_json import LetterCase, dataclass_json
@@ -125,6 +127,15 @@ class StopInfo:
                 self.time_class = "early"
 
 
+def search_potsdam_full_stop_names(query: str) -> Optional[Dict]:
+    query = f"https://www.swp-potsdam.de/api/vbbinformation/search/json/location?name={query}"
+    resp = requests.get(query)
+    if resp.ok:
+        return resp.json()
+
+    return None
+
+
 @dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclasses.dataclass
 class Stop:
@@ -132,6 +143,10 @@ class Stop:
     stop_name: str
     stop_short_name: str
     routes: List[Route]
+
+    @property
+    def urlencoded_name(self):
+        return urllib.parse.quote_plus(self.stop_name.replace("/", "~"))
 
 
 def get_stop(stop_number: str = "180"):
@@ -226,6 +241,46 @@ def setcookie():
     resp.set_cookie('showImage', cookie_value, samesite="STRICT")
 
     return resp
+
+
+@app.route("/search/<query>", methods=["GET"])
+def search_with_origin(query: str):
+    query = urllib.parse.unquote_plus(query.replace("~", "/"))
+    results = search_potsdam_full_stop_names(query)
+    if not results:
+        return query
+
+    results = [r for r in results if results if r.get("type") == "S"]
+    if len(results) == 1:
+        return results[0].get("value")
+
+    name = query.replace("S ", "").lower()
+
+    possible_results = []
+    for result in results:
+        value = result.get("value", "").lower()
+        if not value:
+            continue
+
+        if value == name or (name in value and "potsdam" in value):
+            possible_results.append(value)
+
+    best_ratio = 0
+    winner = query
+    for result in possible_results:
+        length_diff = abs(len(result) - len(name))
+        ratio = fuzzywuzzy.fuzz.ratio(result, name) + length_diff
+        if ratio > best_ratio:
+            best_ratio = ratio
+            winner = result
+
+    winner = "+".join([p.capitalize() for p in winner.split()])
+    now = datetime.now()
+    search_date = now.strftime("%d.%m.%Y")
+    search_time = now.strftime("%H %M").replace(" ", "%3A")
+    url = f"https://www.swp-potsdam.de/de/verkehr/fahrplanauskunft-ergebnis.html?origin={winner}&date={search_date}&time={search_time}&searchForArrival=0#vbb_journey_planner_result"
+    print(url)
+    return redirect(url, code=302)
 
 
 @app.route("/", methods=["POST"])
