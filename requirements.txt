@@ -1,4 +1,4 @@
-requests==2.28.0
+requests==2.28.1
 flask==2.1.2
 dataclasses_json==0.5.7
 uwsgi==2.0.20
